@@ -199,7 +199,7 @@ export class CarnotCycleModel {
     // A γ change moves three of the four corner points at once. Rather than
     // interpolate across the discontinuity mid-leg, snap the playhead to the
     // start of the leg it is on — the corner it snaps to is well defined under
-    // both gases (CLAUDE.md § Edge cases, case 3).
+    // both gases (AGENTS.md § Edge cases, case 3).
     this.gammaPresetProperty.lazyLink(() => {
       this.stageProgressProperty.value = this.legStartProgress();
     });
@@ -247,7 +247,7 @@ export class CarnotCycleModel {
   /**
    * Advance the playhead by dt seconds of simulation time. Every leg takes
    * STAGE_DURATION_S regardless of how much volume or heat it moves, which keeps
-   * short legs visible at extreme ratios (CLAUDE.md § Edge cases, case 2).
+   * short legs visible at extreme ratios (AGENTS.md § Edge cases, case 2).
    *
    * Progress lives in [0, 1) running forwards and in (0, 1] running backwards:
    * the two ends of a leg are the same point in space, so each has to belong to

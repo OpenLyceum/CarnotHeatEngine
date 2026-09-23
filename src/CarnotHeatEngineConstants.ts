@@ -106,7 +106,7 @@ export const T_HOT_RANGE = new Range(400, 800);
 /** Cold-reservoir temperature range, K. */
 export const T_COLD_RANGE = new Range(200, 500);
 
-/** Minimum enforced separation between T_hot and T_cold, K (see CLAUDE.md § Edge cases). */
+/** Minimum enforced separation between T_hot and T_cold, K (see AGENTS.md § Edge cases). */
 export const MIN_TEMPERATURE_GAP = 50;
 
 /** Default hot-reservoir temperature, K. */

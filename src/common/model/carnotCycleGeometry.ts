@@ -112,7 +112,7 @@ const finiteOr = (value: number, fallback: number): number => (Number.isFinite(v
  * positive temperatures with T_hot strictly above T_cold, γ above 1, and an
  * expansion ratio above 1. Callers hold Properties inside their ranges, so this
  * only fires for programmatic misuse or if the ranges are ever loosened — but it
- * keeps every downstream `**` and division finite (see CLAUDE.md § Edge cases).
+ * keeps every downstream `**` and division finite (see AGENTS.md § Edge cases).
  */
 export const sanitizeParameters = (parameters: CycleParameters): CycleParameters => {
   const tCold = Math.max(1, finiteOr(parameters.tCold, 1));
@@ -343,7 +343,7 @@ export const integrateLegWork = (
  * Integrate the whole cycle numerically and derive η from the integrated path
  * alone. {@link CarnotCycleModel} asserts this agrees with 1 − T_c/T_h, so a
  * mistake in the corner-point derivation surfaces as a failing invariant rather
- * than as a plausible-looking wrong number (see CLAUDE.md § Edge cases).
+ * than as a plausible-looking wrong number (see AGENTS.md § Edge cases).
  */
 export const integrateCycle = (
   shape: CycleShape,
