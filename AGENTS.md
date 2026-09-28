@@ -36,45 +36,7 @@ Read both before changing the model.
 | `src/CarnotHeatEngineColors.ts` | All `ProfileColorProperty` instances |
 | `src/i18n/StringManager.ts` | Singleton localized string accessor |
 
-## Things that will bite you
-
-### The third slider is not the overall compression ratio
-
-`compressionRatioProperty` is `V₂/V₁` — the volume ratio across *one* isothermal
-leg. It is **not** V_max/V_min, and it cannot be: the overall span equals `r·τ`
-where `τ = (T_hot/T_cold)^(1/(γ−1))` reaches 32 for a diatomic gas at the range
-extremes, so pinning V_max/V_min to a small number admits no solution. The
-derived overall span is exposed as `CycleGeometry.volumeSpanRatio`. Full argument
-in `carnotCycleGeometry.ts` § "Why the free parameter is a per-leg ratio".
-
-### A stage names a leg, not a process
-
-`CycleStage.ISOTHERMAL_EXPANSION` identifies the leg from corner 1 to corner 2.
-On the Reversed Cycle screen that leg is an isothermal *compression*. Never read
-a stage name as a description of what is happening — call
-`processFor(stage, direction)` and label through `common/view/stageStrings.ts`.
-
-### Progress has different bounds per direction
-
-`[0, 1)` forwards, `(0, 1]` backwards. The two ends of a leg are the same point,
-so each end must belong to exactly one leg. `CarnotCycleModel.step` picks its
-wrap loop by direction; a single loop testing both bounds ping-pongs forever on
-an exact 0 or 1. Do not "simplify" it back.
-
-### geometryProperty is per-change, never per-frame
-
-It runs a 4 × 200-interval Simpson integration. `stateProperty` is the per-frame
-path. Keep it that way.
-
-### The η cross-check must stay honest
-
-`efficiencyAgreesProperty` compares the numerically integrated η against
-`1 − T_c/T_h` and asserts they match. If you change the corner-point derivation
-and this starts failing, the derivation is wrong — do not widen the tolerance.
-The quadrature integrates in log-volume space for accuracy; reverting that to a
-plain integration in V costs several digits on the wide adiabats.
-
-## Common components
+### Common components
 
 ### CarnotHeatEnginePanel
 
@@ -113,7 +75,7 @@ Extended from the template's with a `timeSpeedProperty` (0.25× / 1× / 2×) and
 `scaledDt(dt)` the screen models pass on to `cycle.step`, so one speed setting
 governs both the clock and the cycle.
 
-## Strings
+### Strings
 
 Several strings carry `<sub>` markup (`Q<sub>h</sub>`, `V<sub>2</sub>/V<sub>1</sub>`)
 because thermodynamics is unreadable without subscripts and Unicode has no
@@ -123,6 +85,10 @@ subscript "c". Render those with `RichText`, or `useRichText: true` on a
 `readouts.heatRemoved` / `heatDelivered` are the long descriptive phrases used in
 the screen summary; `…Short` are the compact forms that fit the readout column.
 Do not swap them.
+
+## Model
+
+Physics and behavior: `doc/model.md`.
 
 ## Accessibility
 
@@ -194,6 +160,46 @@ npm run lint && npm run check && npm run build && npm test
 | `npm run test:fuzz` / `test:fuzz:quick` | Playwright fuzz smoke (15s / 10s) |
 | `npm run icons` | Regenerate PWA icons |
 
-## PWA
+## Development notes
+
+### Things that will bite you
+
+### The third slider is not the overall compression ratio
+
+`compressionRatioProperty` is `V₂/V₁` — the volume ratio across *one* isothermal
+leg. It is **not** V_max/V_min, and it cannot be: the overall span equals `r·τ`
+where `τ = (T_hot/T_cold)^(1/(γ−1))` reaches 32 for a diatomic gas at the range
+extremes, so pinning V_max/V_min to a small number admits no solution. The
+derived overall span is exposed as `CycleGeometry.volumeSpanRatio`. Full argument
+in `carnotCycleGeometry.ts` § "Why the free parameter is a per-leg ratio".
+
+### A stage names a leg, not a process
+
+`CycleStage.ISOTHERMAL_EXPANSION` identifies the leg from corner 1 to corner 2.
+On the Reversed Cycle screen that leg is an isothermal *compression*. Never read
+a stage name as a description of what is happening — call
+`processFor(stage, direction)` and label through `common/view/stageStrings.ts`.
+
+### Progress has different bounds per direction
+
+`[0, 1)` forwards, `(0, 1]` backwards. The two ends of a leg are the same point,
+so each end must belong to exactly one leg. `CarnotCycleModel.step` picks its
+wrap loop by direction; a single loop testing both bounds ping-pongs forever on
+an exact 0 or 1. Do not "simplify" it back.
+
+### geometryProperty is per-change, never per-frame
+
+It runs a 4 × 200-interval Simpson integration. `stateProperty` is the per-frame
+path. Keep it that way.
+
+### The η cross-check must stay honest
+
+`efficiencyAgreesProperty` compares the numerically integrated η against
+`1 − T_c/T_h` and asserts they match. If you change the corner-point derivation
+and this starts failing, the derivation is wrong — do not widen the tolerance.
+The quadrature integrates in log-volume space for accuracy; reverting that to a
+plain integration in V costs several digits on the wide adiabats.
+
+### PWA
 
 After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
