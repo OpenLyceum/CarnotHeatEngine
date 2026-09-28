@@ -39,16 +39,19 @@ onReadyToLaunch(() => {
 
   const screens = [
     new IntroScreen(simPreferences, {
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().introStringProperty,
       tandem: Tandem.ROOT.createTandem("introScreen"),
       backgroundColorProperty: CarnotHeatEngineColors.backgroundColorProperty,
     }),
     new EfficiencyLabScreen(simPreferences, {
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().efficiencyLabStringProperty,
       tandem: Tandem.ROOT.createTandem("efficiencyLabScreen"),
       backgroundColorProperty: CarnotHeatEngineColors.backgroundColorProperty,
     }),
     new ReversedCycleScreen(simPreferences, {
+      // The screen name Property updates automatically when the locale changes
       name: stringManager.getScreenNames().reversedCycleStringProperty,
       tandem: Tandem.ROOT.createTandem("reversedCycleScreen"),
       backgroundColorProperty: CarnotHeatEngineColors.backgroundColorProperty,
@@ -76,6 +79,7 @@ onReadyToLaunch(() => {
       },
     }),
 
+    // Optional: fill in credits shown in Help → About
     credits: {
       leadDesign: "",
       softwareDevelopment: "",
