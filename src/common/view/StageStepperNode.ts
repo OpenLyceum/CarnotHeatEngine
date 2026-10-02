@@ -65,7 +65,7 @@ export class StageStepperNode extends HBox {
     const options = optionize<StageStepperNodeOptions, EmptySelfOptions, HBoxOptions>()(
       {
         children: [firstButton, previousButton, nextButton, lastButton],
-        spacing: 6,
+        spacing: BUTTON_SPACING,
       },
       providedOptions,
     );
@@ -75,6 +75,16 @@ export class StageStepperNode extends HBox {
     this.controlsInOrder = [firstButton, previousButton, nextButton, lastButton];
   }
 }
+
+/** Gap between the stepper buttons, px. */
+const BUTTON_SPACING = 6;
+
+/**
+ * Touch-area growth around each small stepper button, px. Sideways it stops at
+ * half the gap so neighbouring buttons' areas do not overlap.
+ */
+const TOUCH_AREA_X_DILATION = BUTTON_SPACING / 2;
+const TOUCH_AREA_Y_DILATION = 8;
 
 const createStepperButton = (
   glyph: Shape,
@@ -87,6 +97,8 @@ const createStepperButton = (
     baseColor: CarnotHeatEngineColors.controlSurfaceColorProperty,
     xMargin: 8,
     yMargin: 6,
+    touchAreaXDilation: TOUCH_AREA_X_DILATION,
+    touchAreaYDilation: TOUCH_AREA_Y_DILATION,
     listener,
     accessibleName,
   });

@@ -122,6 +122,13 @@ listener's old value, but holds it until the parameters have been still for
 slider drag by one frame, comparing nothing useful; settling it means the ghost
 snaps to wherever the drag started.
 
+### Object lifetime
+
+Each screen's model and view are created once and live as long as the sim. Their `link`s,
+`DerivedProperty`s and `Multilink`s connect objects that are torn down together (never), so they are
+not unlinked and the view classes have no `dispose()`. Only objects created and removed at runtime
+would need cleanup, and this sim has none. The memory-leak suite covers the models' `dispose()`.
+
 ## Edge cases handled
 
 1. **T_hot → T_cold convergence** — clamped at the Property level, in both

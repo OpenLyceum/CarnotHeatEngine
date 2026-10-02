@@ -60,7 +60,10 @@
     "volumeSpan": "V<sub>max</sub>/V<sub>min</sub>",
     "hidden": "—",
     "correct": "À moins de 2 points : bien lu.",
-    "incorrect": "À plus de 2 points. Compare et réessaie."
+    "incorrect": "À plus de 2 points. Compare et réessaie.",
+    "valueUnitsPattern": "{{value}} {{units}}",
+    "percentPattern": "{{value}} %",
+    "sumPattern": "{{first}} + {{second}}"
   },
   "diagrams": {
     "pvTitle": "Pression–Volume",

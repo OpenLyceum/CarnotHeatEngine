@@ -10,11 +10,16 @@
 import {
   BasicActionsKeyboardHelpSection,
   SliderControlsKeyboardHelpSection,
+  TimeControlsKeyboardHelpSection,
   TwoColumnKeyboardHelpContent,
 } from "scenerystack/scenery-phet";
 
 export class IntroKeyboardHelpContent extends TwoColumnKeyboardHelpContent {
   public constructor() {
-    super([new SliderControlsKeyboardHelpSection()], [new BasicActionsKeyboardHelpSection()]);
+    // Radio groups (gas, speed, direction) are covered by Basic Actions' "move between items in a group".
+    super(
+      [new SliderControlsKeyboardHelpSection()],
+      [new TimeControlsKeyboardHelpSection(), new BasicActionsKeyboardHelpSection()],
+    );
   }
 }

@@ -10,6 +10,7 @@
  */
 import { DerivedProperty, PatternStringProperty } from "scenerystack/axon";
 import { toFixed } from "scenerystack/dot";
+import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { toKilojoules } from "../../common/view/readouts.js";
 import { StringManager } from "../../i18n/StringManager.js";
@@ -26,8 +27,10 @@ export class EfficiencyLabScreenSummaryContent extends ScreenSummaryContent {
         a11y.efficiencyKnownStringProperty,
         a11y.efficiencyHiddenStringProperty,
       ],
+      // fillIn replaces every occurrence, so a translation (or ?stringTest=dynamic)
+      // may use {{value}} more than once.
       (visible, efficiency, knownPattern, hidden) =>
-        visible ? knownPattern.replace("{{value}}", toFixed(efficiency * 100, 1)) : hidden,
+        visible ? StringUtils.fillIn(knownPattern, { value: toFixed(efficiency * 100, 1) }) : hidden,
     );
 
     super({

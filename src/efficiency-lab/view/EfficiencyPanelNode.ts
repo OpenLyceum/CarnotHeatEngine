@@ -13,6 +13,7 @@
 
 import { DerivedProperty } from "scenerystack/axon";
 import { toFixed } from "scenerystack/dot";
+import { StringUtils } from "scenerystack/phetcommon";
 import { HSeparator, RichText, VBox } from "scenerystack/scenery";
 import CarnotHeatEngineColors from "../../CarnotHeatEngineColors.js";
 import { READOUT_FONT } from "../../CarnotHeatEngineConstants.js";
@@ -60,8 +61,14 @@ export class EfficiencyPanelNode extends CarnotHeatEnginePanel {
 
     // ── η, hidden in Measure mode until Check is pressed ──────────────────────
     const efficiencyValueProperty = new DerivedProperty(
-      [model.isEfficiencyVisibleProperty, model.cycle.efficiencyProperty, readoutStrings.hiddenStringProperty],
-      (visible, efficiency, hidden) => (visible ? `${toFixed(efficiency * 100, 1)} %` : hidden),
+      [
+        model.isEfficiencyVisibleProperty,
+        model.cycle.efficiencyProperty,
+        readoutStrings.hiddenStringProperty,
+        readoutStrings.percentPatternStringProperty,
+      ],
+      (visible, efficiency, hidden, pattern) =>
+        visible ? StringUtils.fillIn(pattern, { value: toFixed(efficiency * 100, 1) }) : hidden,
     );
     const efficiencyRow = createReadoutRow(readoutStrings.efficiencyStringProperty, efficiencyValueProperty, {
       valueFill: CarnotHeatEngineColors.accentColorProperty,

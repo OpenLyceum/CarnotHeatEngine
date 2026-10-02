@@ -12,9 +12,11 @@
 
 import { DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
 import { Bounds2, toFixed } from "scenerystack/dot";
+import { StringUtils } from "scenerystack/phetcommon";
 import { AlignBox, HBox, type Node, RichText, type TPaint, VBox } from "scenerystack/scenery";
 import CarnotHeatEngineColors from "../../CarnotHeatEngineColors.js";
 import { READOUT_FONT } from "../../CarnotHeatEngineConstants.js";
+import { StringManager } from "../../i18n/StringManager.js";
 import { formatSignificant } from "./chartUtils.js";
 
 /** Width of the label column in a readout block, px. */
@@ -22,6 +24,9 @@ const READOUT_LABEL_WIDTH = 96;
 
 /** Height a readout row is aligned within, px. */
 const READOUT_ROW_HEIGHT = 18;
+
+/** Widest a readout value may draw before it scales down, px. */
+const READOUT_VALUE_MAX_WIDTH = 130;
 
 /** J → kJ, the unit the energy readouts are labelled in. */
 export const toKilojoules = (energyJ: number): number => energyJ / 1000;
@@ -32,8 +37,12 @@ export const valueWithUnits = (
   unitsProperty: TReadOnlyProperty<string>,
   decimalPlaces = 1,
 ): TReadOnlyProperty<string> =>
-  new DerivedProperty([valueProperty, unitsProperty], (value, units) =>
-    Number.isFinite(value) ? `${toFixed(value, decimalPlaces)} ${units}` : "—",
+  new DerivedProperty(
+    [valueProperty, unitsProperty, StringManager.getInstance().getReadouts().valueUnitsPatternStringProperty],
+    (value, units, pattern) =>
+      Number.isFinite(value)
+        ? StringUtils.fillIn(pattern, { value: toFixed(value, decimalPlaces), units: units })
+        : "—",
   );
 
 /** A live "<value> <units>" string rounded to `digits` significant figures. */
@@ -42,7 +51,10 @@ export const significantValueWithUnits = (
   unitsProperty: TReadOnlyProperty<string>,
   digits = 3,
 ): TReadOnlyProperty<string> =>
-  new DerivedProperty([valueProperty, unitsProperty], (value, units) => `${formatSignificant(value, digits)} ${units}`);
+  new DerivedProperty(
+    [valueProperty, unitsProperty, StringManager.getInstance().getReadouts().valueUnitsPatternStringProperty],
+    (value, units, pattern) => StringUtils.fillIn(pattern, { value: formatSignificant(value, digits), units: units }),
+  );
 
 /**
  * One readout row: label on the left in a fixed-width column, value on the
@@ -61,7 +73,7 @@ export const createReadoutRow = (
   const value = new RichText(valueProperty, {
     font: READOUT_FONT,
     fill: options?.valueFill ?? CarnotHeatEngineColors.textColorProperty,
-    maxWidth: 130,
+    maxWidth: READOUT_VALUE_MAX_WIDTH,
   });
   return new HBox({
     children: [

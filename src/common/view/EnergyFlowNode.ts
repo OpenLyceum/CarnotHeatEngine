@@ -18,6 +18,7 @@
 import { DerivedProperty, Multilink, type TReadOnlyProperty } from "scenerystack/axon";
 import { Bounds2 } from "scenerystack/dot";
 import { combineOptions } from "scenerystack/phet-core";
+import { StringUtils } from "scenerystack/phetcommon";
 import {
   AlignBox,
   HBox,
@@ -90,13 +91,17 @@ export class EnergyFlowNode extends VBox {
     const splitBar = new HBox({ children: [workSegment, qColdSegment], spacing: 1, align: "top" });
     const splitLabel = new RichText(
       new DerivedProperty(
-        [readoutStrings.workStringProperty, readoutStrings.qColdStringProperty],
-        (work, qCold) => `${work} + ${qCold}`,
+        [
+          readoutStrings.workStringProperty,
+          readoutStrings.qColdStringProperty,
+          readoutStrings.sumPatternStringProperty,
+        ],
+        (work, qCold, pattern) => StringUtils.fillIn(pattern, { first: work, second: qCold }),
       ),
       {
         font: READOUT_FONT,
         fill: CarnotHeatEngineColors.textColorProperty,
-        maxWidth: 70,
+        maxWidth: ROW_LABEL_MAX_WIDTH,
       },
     );
     const splitRow = new HBox({ children: [rowLabelBox(splitLabel), splitBar], spacing: 8, align: "center" });
@@ -148,7 +153,7 @@ const labelledRow = (labelProperty: TReadOnlyProperty<string>, bar: Node): HBox 
         new RichText(labelProperty, {
           font: READOUT_FONT,
           fill: CarnotHeatEngineColors.textColorProperty,
-          maxWidth: 70,
+          maxWidth: ROW_LABEL_MAX_WIDTH,
         }),
       ),
       bar,
@@ -159,6 +164,9 @@ const labelledRow = (labelProperty: TReadOnlyProperty<string>, bar: Node): HBox 
 
 /** Width of the label column, px — fixed so every bar starts at the same x. */
 const LABEL_COLUMN_WIDTH = 74;
+
+/** Widest a row label may draw before it scales down, px (inside LABEL_COLUMN_WIDTH). */
+const ROW_LABEL_MAX_WIDTH = 70;
 
 /** Right-aligns a label in the fixed-width label column. */
 const rowLabelBox = (label: Node): Node =>
