@@ -82,6 +82,7 @@ export class PVDiagramNode extends CycleDiagramNode {
   private readonly playhead: Circle;
 
   private readonly geometryProperty: TReadOnlyProperty<CycleGeometry>;
+  private readonly stateProperty: TReadOnlyProperty<CycleState>;
   private readonly activeStageProperty: TReadOnlyProperty<CycleStage>;
   private readonly directionProperty: TReadOnlyProperty<CycleDirection>;
   private readonly ghostGeometryProperty: TReadOnlyProperty<CycleGeometry | null> | null;
@@ -102,6 +103,7 @@ export class PVDiagramNode extends CycleDiagramNode {
     );
 
     this.geometryProperty = providedOptions.geometryProperty;
+    this.stateProperty = providedOptions.stateProperty;
     this.activeStageProperty = providedOptions.activeStageProperty;
     this.directionProperty = providedOptions.directionProperty;
     this.ghostGeometryProperty = providedOptions.ghostGeometryProperty ?? null;
@@ -191,7 +193,7 @@ export class PVDiagramNode extends CycleDiagramNode {
     }
     Multilink.multilinkAny(cycleDependencies, () => this.updateCycle());
 
-    providedOptions.stateProperty.link((state) => {
+    this.stateProperty.link((state) => {
       this.playhead.translation = this.chartTransform.modelToViewPosition(toPoint(state));
     });
 
@@ -269,6 +271,9 @@ export class PVDiagramNode extends CycleDiagramNode {
       const offset = outward.magnitude > 1e-6 ? outward.normalized().timesScalar(12) : new Vector2(0, -12);
       label.center = viewPoint.plus(offset);
     }
+
+    // The ghost can change the axis ranges without moving the playhead state.
+    this.playhead.translation = this.chartTransform.modelToViewPosition(toPoint(this.stateProperty.value));
   }
 
   /** Whether a ghost geometry exists and is currently meant to be shown. */

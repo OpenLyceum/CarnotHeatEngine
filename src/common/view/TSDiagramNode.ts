@@ -20,9 +20,9 @@ import { LinePlot } from "scenerystack/bamboo";
 import { Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { combineOptions } from "scenerystack/phet-core";
-import { Circle, type NodeOptions, Path } from "scenerystack/scenery";
+import { Circle, type NodeOptions, Path, Text } from "scenerystack/scenery";
 import CarnotHeatEngineColors from "../../CarnotHeatEngineColors.js";
-import { PLAYHEAD_RADIUS } from "../../CarnotHeatEngineConstants.js";
+import { PLAYHEAD_RADIUS, TICK_LABEL_FONT } from "../../CarnotHeatEngineConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { CycleGeometry, CycleState } from "../model/carnotCycleGeometry.js";
 import { CycleDiagramNode, type CycleDiagramNodeOptions } from "./CycleDiagramNode.js";
@@ -36,6 +36,8 @@ export type TSDiagramNodeOptions = {
   geometryProperty: TReadOnlyProperty<CycleGeometry>;
   /** The playhead state. */
   stateProperty: TReadOnlyProperty<CycleState>;
+  /** Whether corner states are numbered 1–4 (a Preferences toggle). */
+  showCornerLabelsProperty?: TReadOnlyProperty<boolean>;
   /** Extra Node options (position, visibility, …). */
   nodeOptions?: NodeOptions;
 };
@@ -44,7 +46,9 @@ export class TSDiagramNode extends CycleDiagramNode {
   private readonly rectanglePlot: LinePlot;
   private readonly workAreaPath: Path;
   private readonly playhead: Circle;
+  private readonly cornerLabels: Text[];
   private readonly geometryProperty: TReadOnlyProperty<CycleGeometry>;
+  private readonly stateProperty: TReadOnlyProperty<CycleState>;
 
   public constructor(providedOptions: TSDiagramNodeOptions) {
     const diagramStrings = StringManager.getInstance().getDiagrams();
@@ -62,6 +66,7 @@ export class TSDiagramNode extends CycleDiagramNode {
     );
 
     this.geometryProperty = providedOptions.geometryProperty;
+    this.stateProperty = providedOptions.stateProperty;
 
     this.workAreaPath = new Path(null, { fill: CarnotHeatEngineColors.workAreaColorProperty });
     this.plotLayer.addChild(this.workAreaPath);
@@ -82,8 +87,25 @@ export class TSDiagramNode extends CycleDiagramNode {
     });
     this.plotLayer.addChild(this.playhead);
 
+    this.cornerLabels = [];
+    for (let index = 0; index < 4; index++) {
+      const label = new Text(String(index + 1), {
+        font: TICK_LABEL_FONT,
+        fill: CarnotHeatEngineColors.cornerMarkerColorProperty,
+      });
+      this.cornerLabels.push(label);
+      this.overlayLayer.addChild(label);
+    }
+    if (providedOptions.showCornerLabelsProperty) {
+      providedOptions.showCornerLabelsProperty.link((visible) => {
+        for (const label of this.cornerLabels) {
+          label.visible = visible;
+        }
+      });
+    }
+
     Multilink.multilinkAny([this.geometryProperty], () => this.updateCycle());
-    providedOptions.stateProperty.link((state) => {
+    this.stateProperty.link((state) => {
       this.playhead.translation = this.chartTransform.modelToViewPosition(toPoint(state));
     });
 
@@ -125,5 +147,19 @@ export class TSDiagramNode extends CycleDiagramNode {
       }
     }
     this.workAreaPath.shape = shape.close();
+
+    const viewCorners = corners.slice(0, 4).map((corner) => this.chartTransform.modelToViewPosition(corner));
+    const center = viewCorners.reduce((sum, corner) => sum.plus(corner), new Vector2(0, 0)).timesScalar(0.25);
+    for (let index = 0; index < viewCorners.length; index++) {
+      const corner = viewCorners[index];
+      const label = this.cornerLabels[index];
+      if (!(corner && label)) {
+        continue;
+      }
+      const outward = corner.minus(center);
+      label.center = corner.plus(outward.normalized().timesScalar(12));
+    }
+
+    this.playhead.translation = this.chartTransform.modelToViewPosition(toPoint(this.stateProperty.value));
   }
 }

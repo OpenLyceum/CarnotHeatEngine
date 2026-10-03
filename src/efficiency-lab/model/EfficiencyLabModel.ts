@@ -103,6 +103,11 @@ export class EfficiencyLabModel implements TModel {
     this.modeProperty.lazyLink(() => {
       this.isEfficiencyRevealedProperty.value = false;
     });
+    // Editing the answer withdraws the verdict too, so it only ever describes a
+    // submitted answer: a new value has to be checked again.
+    this.enteredEfficiencyPercentProperty.lazyLink(() => {
+      this.isEfficiencyRevealedProperty.value = false;
+    });
 
     this.isEfficiencyVisibleProperty = new DerivedProperty(
       [this.modeProperty, this.isEfficiencyRevealedProperty],

@@ -64,27 +64,31 @@ export class MeasurePanelNode extends CarnotHeatEnginePanel {
         maxWidth: 100,
       }),
       baseColor: CarnotHeatEngineColors.controlSurfaceColorProperty,
-      listener: () => model.revealEfficiency(),
+      listener: () => {
+        model.revealEfficiency();
+        // Speak the verdict, so a screen-reader user gets the same feedback a sighted user sees.
+        checkButton.addAccessibleResponse(verdictProperty.value);
+      },
       accessibleName: a11y.controls.checkStringProperty,
     });
 
-    const feedbackText = new RichText(
-      new DerivedProperty(
-        [
-          model.isEfficiencyRevealedProperty,
-          model.isAnswerCorrectProperty,
-          readoutStrings.correctStringProperty,
-          readoutStrings.incorrectStringProperty,
-        ],
-        (revealed, correct, correctMessage, incorrectMessage) =>
-          revealed ? (correct ? correctMessage : incorrectMessage) : "",
-      ),
-      {
-        font: READOUT_FONT,
-        fill: CarnotHeatEngineColors.textColorProperty,
-        lineWrap: FEEDBACK_WRAP_WIDTH,
-      },
+    const verdictProperty = new DerivedProperty(
+      [
+        model.isEfficiencyRevealedProperty,
+        model.isAnswerCorrectProperty,
+        readoutStrings.correctStringProperty,
+        readoutStrings.incorrectStringProperty,
+      ],
+      (revealed, correct, correctMessage, incorrectMessage) =>
+        revealed ? (correct ? correctMessage : incorrectMessage) : "",
     );
+    const feedbackText = new RichText(verdictProperty, {
+      font: READOUT_FONT,
+      fill: CarnotHeatEngineColors.textColorProperty,
+      lineWrap: FEEDBACK_WRAP_WIDTH,
+      // The verdict stays readable in the PDOM after it has been announced.
+      accessibleParagraph: verdictProperty,
+    });
     model.isAnswerCorrectProperty.link((correct) => {
       feedbackText.fill = correct
         ? CarnotHeatEngineColors.correctColorProperty

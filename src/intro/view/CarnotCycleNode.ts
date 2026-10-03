@@ -257,8 +257,11 @@ export class CarnotCycleNode extends Node {
     });
 
     // Arrow geometry: which way heat and work flow on this leg, and how big.
+    // The playhead state is a dependency so the work arrow and its caption ride
+    // on the piston within a leg. It is linked after the piston update above, so
+    // `piston.top` is already current when this runs.
     Multilink.multilink(
-      [cycle.cycleStageProperty, cycle.directionProperty, cycle.qHotProperty, cycle.qColdProperty],
+      [cycle.cycleStageProperty, cycle.directionProperty, cycle.qHotProperty, cycle.qColdProperty, cycle.stateProperty],
       (stage, direction, qHot, qCold) => {
         const engine = direction === CycleDirection.ENGINE;
         const largestHeat = Math.max(qHot, qCold, Number.EPSILON);

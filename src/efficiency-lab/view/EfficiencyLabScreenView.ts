@@ -18,6 +18,7 @@
  * checkboxes are how the screen grows with them.
  */
 
+import { Multilink } from "scenerystack/axon";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { INTER_ELEMENT_GAP, SCREEN_VIEW_MARGIN } from "../../CarnotHeatEngineConstants.js";
@@ -91,6 +92,7 @@ export class EfficiencyLabScreenView extends ScreenView {
     const tsDiagram = new TSDiagramNode({
       geometryProperty: model.cycle.geometryProperty,
       stateProperty: model.cycle.stateProperty,
+      showCornerLabelsProperty: preferences.showCornerLabelsProperty,
     });
     tsDiagram.left = pvDiagram.right + INTER_ELEMENT_GAP;
     tsDiagram.top = SCREEN_VIEW_MARGIN;
@@ -113,8 +115,8 @@ export class EfficiencyLabScreenView extends ScreenView {
     limitInset.left = efficiencyPanel.right + PANEL_NEIGHBOUR_GAP;
     limitInset.top = efficiencyPanel.top;
     this.addChild(limitInset);
-    model.showCarnotLimitProperty.link((visible) => {
-      limitInset.visible = visible;
+    Multilink.multilink([model.showCarnotLimitProperty, model.isEfficiencyVisibleProperty], (shown, visible) => {
+      limitInset.visible = shown && visible;
     });
 
     // ── Measure-mode self-check, in the middle column ─────────────────────────
