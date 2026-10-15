@@ -86,8 +86,12 @@ export class MeasurePanelNode extends CarnotHeatEnginePanel {
       font: READOUT_FONT,
       fill: CarnotHeatEngineColors.textColorProperty,
       lineWrap: FEEDBACK_WRAP_WIDTH,
-      // The verdict stays readable in the PDOM after it has been announced.
-      accessibleParagraph: verdictProperty,
+    });
+    // The verdict stays readable in the PDOM after it has been announced. Before a check it is
+    // null, not "": an empty paragraph leaves the node with PDOM content but nothing to place,
+    // which fails Scenery's "No placeable sibling" assertion under ?ea.
+    verdictProperty.link((verdict) => {
+      feedbackText.accessibleParagraph = verdict === "" ? null : verdict;
     });
     model.isAnswerCorrectProperty.link((correct) => {
       feedbackText.fill = correct
