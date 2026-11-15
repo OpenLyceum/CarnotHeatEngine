@@ -124,7 +124,7 @@ export const sanitizeParameters = (parameters: CycleParameters): CycleParameters
 };
 
 /** Ideal-gas pressure, Pa, for n mol at temperature T in volume V. */
-export const idealGasPressure = (nMoles: number, temperature: number, volume: number): number =>
+const idealGasPressure = (nMoles: number, temperature: number, volume: number): number =>
   (nMoles * GAS_CONSTANT * temperature) / volume;
 
 /** The adiabatic volume ratio τ = (T_hot/T_cold)^(1/(γ−1)) each adiabat must span. */
@@ -132,7 +132,7 @@ export const adiabaticVolumeRatio = (tHot: number, tCold: number, gamma: number)
   (tHot / tCold) ** (1 / (gamma - 1));
 
 /** Derive the four corner states from a (sanitized) parameter set. */
-export const computeCycleShape = (rawParameters: CycleParameters): CycleShape => {
+const computeCycleShape = (rawParameters: CycleParameters): CycleShape => {
   const parameters = sanitizeParameters(rawParameters);
   const { tHot, tCold, compressionRatio, nMoles, gamma } = parameters;
 
@@ -196,7 +196,7 @@ export const computeCycleGeometry = (rawParameters: CycleParameters): CycleGeome
  * tuple destructure rather than an indexed lookup so both ends stay typed as
  * `CycleState` under `noUncheckedIndexedAccess`.
  */
-export const legCorners = (shape: CycleShape, stage: CycleStage): { start: CycleState; end: CycleState } => {
+const legCorners = (shape: CycleShape, stage: CycleStage): { start: CycleState; end: CycleState } => {
   const [state1, state2, state3, state4] = shape.corners;
   if (stage === CycleStage.ISOTHERMAL_EXPANSION) {
     return { start: state1, end: state2 };
@@ -211,7 +211,7 @@ export const legCorners = (shape: CycleShape, stage: CycleStage): { start: Cycle
 };
 
 /** Volumes of the leg's start and end corners, in engine order. */
-export const legVolumeBounds = (shape: CycleShape, stage: CycleStage): { start: number; end: number } => {
+const legVolumeBounds = (shape: CycleShape, stage: CycleStage): { start: number; end: number } => {
   const { start, end } = legCorners(shape, stage);
   return { start: start.volume, end: end.volume };
 };
@@ -220,7 +220,7 @@ export const legVolumeBounds = (shape: CycleShape, stage: CycleStage): { start: 
  * Pressure, Pa, at volume V on `stage`'s analytic curve. Isothermal legs follow
  * P = nRT/V; adiabatic legs follow P·V^γ = const through their starting corner.
  */
-export const pressureOnLeg = (shape: CycleShape, stage: CycleStage, volume: number): number => {
+const pressureOnLeg = (shape: CycleShape, stage: CycleStage, volume: number): number => {
   const { nMoles, gamma, tHot, tCold } = shape.parameters;
   if (stage === CycleStage.ISOTHERMAL_EXPANSION) {
     return idealGasPressure(nMoles, tHot, volume);
@@ -302,7 +302,7 @@ export const sampleCycle = (shape: CycleShape, samplesPerLeg: number = CURVE_SAM
  * Signed: an integral run from a high to a low bound comes back negative, which
  * is what the compression legs need.
  */
-export const simpsonIntegral = (f: (x: number) => number, a: number, b: number, intervals: number): number => {
+const simpsonIntegral = (f: (x: number) => number, a: number, b: number, intervals: number): number => {
   const n = intervals % 2 === 0 ? intervals : intervals + 1;
   const h = (b - a) / n;
   let sum = f(a) + f(b);
@@ -345,7 +345,7 @@ export const integrateLegWork = (
  * mistake in the corner-point derivation surfaces as a failing invariant rather
  * than as a plausible-looking wrong number (see AGENTS.md § Edge cases).
  */
-export const integrateCycle = (
+const integrateCycle = (
   shape: CycleShape,
   intervals: number = INTEGRATION_INTERVALS_PER_LEG,
 ): { workFromPath: number; qHotFromPath: number; efficiencyFromPath: number } => {

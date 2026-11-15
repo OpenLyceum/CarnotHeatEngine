@@ -40,13 +40,13 @@ export const CYCLE_STAGE_ORDER = [
 ] as const;
 
 /** Index of `stage` in {@link CYCLE_STAGE_ORDER} (0–3). */
-export const stageIndex = (stage: CycleStage): number => CYCLE_STAGE_ORDER.indexOf(stage);
+const stageIndex = (stage: CycleStage): number => CYCLE_STAGE_ORDER.indexOf(stage);
 
 /**
  * The stage at `index` in engine order, wrapping. Spelled out rather than
  * indexed so the return type stays `CycleStage` under `noUncheckedIndexedAccess`.
  */
-export const stageAtIndex = (index: number): CycleStage => {
+const stageAtIndex = (index: number): CycleStage => {
   const wrapped = ((index % CYCLE_STAGE_ORDER.length) + CYCLE_STAGE_ORDER.length) % CYCLE_STAGE_ORDER.length;
   if (wrapped === 0) {
     return CycleStage.ISOTHERMAL_EXPANSION;
