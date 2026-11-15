@@ -113,6 +113,7 @@ const finiteOr = (value: number, fallback: number): number => (Number.isFinite(v
  * expansion ratio above 1. Callers hold Properties inside their ranges, so this
  * only fires for programmatic misuse or if the ranges are ever loosened — but it
  * keeps every downstream `**` and division finite (see AGENTS.md § Edge cases).
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const sanitizeParameters = (parameters: CycleParameters): CycleParameters => {
   const tCold = Math.max(1, finiteOr(parameters.tCold, 1));
@@ -127,7 +128,10 @@ export const sanitizeParameters = (parameters: CycleParameters): CycleParameters
 const idealGasPressure = (nMoles: number, temperature: number, volume: number): number =>
   (nMoles * GAS_CONSTANT * temperature) / volume;
 
-/** The adiabatic volume ratio τ = (T_hot/T_cold)^(1/(γ−1)) each adiabat must span. */
+/**
+ * The adiabatic volume ratio τ = (T_hot/T_cold)^(1/(γ−1)) each adiabat must span.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const adiabaticVolumeRatio = (tHot: number, tCold: number, gamma: number): number =>
   (tHot / tCold) ** (1 / (gamma - 1));
 
@@ -321,6 +325,7 @@ const simpsonIntegral = (f: (x: number) => number, a: number, b: number, interva
  * in V directly loses several digits on the wide adiabats at the top of the
  * parameter ranges, where V_max/V_min reaches 256 — which matters because this
  * integral's whole job is to be an independent check on the closed form.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const integrateLegWork = (
   shape: CycleShape,

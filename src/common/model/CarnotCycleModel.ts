@@ -380,6 +380,7 @@ export class CarnotCycleModel {
  * Whether a geometry's integrated and closed-form efficiencies agree. Kept as a
  * free function so tests can sweep it across the parameter space without
  * constructing a model.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const efficiencyAgrees = (geometry: CycleGeometry): boolean => {
   const { efficiency, efficiencyFromPath } = geometry;
