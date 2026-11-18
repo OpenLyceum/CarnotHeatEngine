@@ -20,7 +20,7 @@ import {
   FLAT_RESET_ALL_BUTTON_OPTIONS,
   TIME_CONTROL_SPEED_RADIO_OPTIONS,
 } from "../CarnotHeatEngineButtonOptions.js";
-import { DEFAULT_TIME_SPEEDS, type TimeModel } from "../TimeModel.js";
+import type { TimeModel } from "../TimeModel.js";
 
 /**
  * Any model that drives the shared chrome: a {@link TimeModel} for play/pause
@@ -48,7 +48,7 @@ export const createBackgroundFill = (layoutBounds: Bounds2): Rectangle =>
 export const createTimeControlNode = (model: ChromeModel): TimeControlNode =>
   new TimeControlNode(model.timer.isPlayingProperty, {
     timeSpeedProperty: model.timer.timeSpeedProperty,
-    timeSpeeds: DEFAULT_TIME_SPEEDS,
+    timeSpeeds: [...model.timer.timeSpeeds],
     ...TIME_CONTROL_SPEED_RADIO_OPTIONS,
     playPauseStepButtonOptions: {
       ...FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,

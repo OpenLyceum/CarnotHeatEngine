@@ -23,6 +23,7 @@ import {
   EFFICIENCY_ENTRY_RANGE_PERCENT,
   GHOST_SETTLE_TIME_S,
   MEASURE_TOLERANCE_PERCENT,
+  TIME_SPEED_MULTIPLIERS,
 } from "../../CarnotHeatEngineConstants.js";
 import { CarnotCycleModel } from "../../common/model/CarnotCycleModel.js";
 import type { CycleGeometry } from "../../common/model/carnotCycleGeometry.js";
@@ -34,7 +35,7 @@ export class EfficiencyLabModel implements TModel {
   public readonly cycle = new CarnotCycleModel();
 
   /** Play/pause plus the 0.25×–2× speed setting. */
-  public readonly timer = new TimeModel();
+  public readonly timer = new TimeModel({ timeSpeedMultipliers: TIME_SPEED_MULTIPLIERS });
 
   /**
    * The cycle as it was before the most recent parameter change, drawn ghosted
@@ -152,13 +153,13 @@ export class EfficiencyLabModel implements TModel {
 
   /** Advance one frame while paused — what the step-forward button needs. */
   public stepForward(dt: number): void {
-    this.timer.stepForward(dt);
+    this.timer.advance(dt);
     this.cycle.step(dt);
   }
 
   /** Rewind one frame while paused — what the step-backward button needs. */
   public stepBackward(dt: number): void {
-    this.timer.stepBackward(dt);
+    this.timer.advance(-dt);
     this.cycle.step(-dt);
   }
 

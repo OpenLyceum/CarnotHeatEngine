@@ -16,6 +16,7 @@
  */
 
 import { Range } from "scenerystack/dot";
+import { TimeSpeed } from "scenerystack/scenery-phet";
 import CarnotHeatEngineNamespace from "./CarnotHeatEngineNamespace.js";
 
 // ── Layout / chrome (screen pixels) ───────────────────────────────────────────
@@ -182,7 +183,15 @@ export const INTEGRATION_INTERVALS_PER_LEG = 200;
  */
 export const EFFICIENCY_AGREEMENT_TOLERANCE = 1e-6;
 
+/** Selectable playback speeds in display order → simulation seconds per wall-clock second. */
+export const TIME_SPEED_MULTIPLIERS: ReadonlyMap<TimeSpeed, number> = new Map([
+  [TimeSpeed.FAST, 2],
+  [TimeSpeed.NORMAL, 1],
+  [TimeSpeed.SLOW, 0.25],
+]);
+
 CarnotHeatEngineNamespace.register("CarnotHeatEngineConstants", {
+  TIME_SPEED_MULTIPLIERS,
   SCREEN_VIEW_MARGIN,
   PANEL_CORNER_RADIUS,
   DIAGRAM_VIEW_WIDTH,
